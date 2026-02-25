@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "mystcraft_reborn:item/picture_book"
+  }
+}

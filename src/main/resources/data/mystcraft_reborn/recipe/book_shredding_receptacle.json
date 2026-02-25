@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "R",
+    "L"
+  ],
+  "key": {
+    "R": {
+      "item": "mystcraft_reborn:blue_book_receptacle"
+    },
+    "L": {
+      "item": "minecraft:lava_bucket"
+    }
+  },
+  "result": {
+    "id": "mystcraft_reborn:book_shredding_receptacle",
+    "count": 1
+  }
+}

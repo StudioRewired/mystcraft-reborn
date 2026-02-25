@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/amethyst_bud",
+  "textures": {
+    "layer0": "mystcraft_reborn:block/crystal_cluster/green/medium_green_crystal_bud"
+  }
+}

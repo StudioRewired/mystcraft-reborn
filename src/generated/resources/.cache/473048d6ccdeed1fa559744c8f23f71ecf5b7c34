@@ -1,0 +1,6 @@
+// 1.21.1	2024-11-06T10:18:24.4606617	Tags for minecraft:block mod id mystcraft_reborn
+6c13d0f9924071f7a54d528adc3b8e2c3d24f918 data/c/tags/block/budding_blocks.json
+fe360df3c52e55fde729285b258f86a796c4013a data/c/tags/block/buds.json
+dbabcd629aae8363b927431647b30bd96b90a79b data/c/tags/block/clusters.json
+85811b2e652184f9a0ece3c389ecb47aa1cc25fe data/minecraft/tags/block/mineable/axe.json
+5c9faa266198129b0e04e8f33ae0456d3d367c14 data/minecraft/tags/block/mineable/pickaxe.json

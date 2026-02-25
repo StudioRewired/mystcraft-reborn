@@ -1,0 +1,18 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "###",
+        "# #",
+        "###"
+    ],
+    "key": {
+        "#": {
+            "item": "mystcraft_reborn:green_crystal_block"
+        }
+    },
+    "result": {
+        "id": "mystcraft_reborn:green_book_receptacle",
+        "count": 1
+    },
+    "group": "book_receptacles"
+}

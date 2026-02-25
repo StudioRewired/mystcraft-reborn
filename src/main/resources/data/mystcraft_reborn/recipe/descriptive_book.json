@@ -1,0 +1,13 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [
+        {
+            "item": "minecraft:writable_book"
+        }
+    ],
+    "result": {
+        "id": "mystcraft_reborn:descriptive_book",
+        "count": 1
+    },
+    "group": "mystcraft_books"
+}

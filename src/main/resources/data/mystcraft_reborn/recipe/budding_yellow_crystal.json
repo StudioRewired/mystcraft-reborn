@@ -1,0 +1,24 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        " # ",
+        "GAG",
+        " G "
+    ],
+    "key": {
+        "#": {
+            "item": "minecraft:yellow_dye"
+        },
+        "G": {
+            "item": "minecraft:glowstone_dust"
+        },
+        "A": {
+            "item": "minecraft:amethyst_block"
+        }
+    },
+    "result": {
+        "id": "mystcraft_reborn:budding_yellow_crystal",
+        "count": 1
+    },
+    "group": "budding_crystals"
+}
