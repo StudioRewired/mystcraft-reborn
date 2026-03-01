@@ -1,11 +1,11 @@
 package com.mynamesraph.mystcraft.item
 
 import com.mynamesraph.mystcraft.block.crystal.CrystalColor
-import com.mynamesraph.mystcraft.block.portal.BookReceptacleBlockEntity
+import com.mynamesraph.mystcraft.block.receptacle.BookReceptacleBlockEntity
 import com.mynamesraph.mystcraft.block.portal.LinkPortalBlock
+import com.mynamesraph.mystcraft.block.receptacle.BookReceptacleBlock
 import com.mynamesraph.mystcraft.registry.MystcraftBlocks
 import net.minecraft.core.BlockPos
-import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.item.DyeColor
 import net.minecraft.world.item.Item
@@ -170,10 +170,12 @@ class ColoringBookItem(properties: Properties) : Item(properties) {
         // Replace receptacle block, preserving FACING and LOCKED state
         val newReceptacleBlock = receptacleBlockFor(nextColor)
         val newReceptacleState = newReceptacleBlock.defaultBlockState()
-            .setValue(com.mynamesraph.mystcraft.block.portal.BookReceptacleBlock.FACING,
-                receptacleState.getValue(com.mynamesraph.mystcraft.block.portal.BookReceptacleBlock.FACING))
-            .setValue(com.mynamesraph.mystcraft.block.portal.BookReceptacleBlock.LOCKED,
-                receptacleState.getValue(com.mynamesraph.mystcraft.block.portal.BookReceptacleBlock.LOCKED))
+            .setValue(
+                BookReceptacleBlock.FACING,
+                receptacleState.getValue(BookReceptacleBlock.FACING))
+            .setValue(
+                BookReceptacleBlock.LOCKED,
+                receptacleState.getValue(BookReceptacleBlock.LOCKED))
 
         level.setBlock(receptaclePos, newReceptacleState, Block.UPDATE_ALL)
 

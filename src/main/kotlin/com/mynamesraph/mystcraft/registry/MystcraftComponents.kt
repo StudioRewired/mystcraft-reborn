@@ -48,6 +48,11 @@ object MystcraftComponents {
             .networkSynchronized(PreviewImageComponent.STREAM_CODEC)
     }
 
+    val BOOK_BAG = COMPONENTS.registerComponentType("book_bag") {
+        it.persistent(BookBagComponent.CODEC)
+            .networkSynchronized(BookBagComponent.STREAM_CODEC)
+    }
+
     fun register(eventBus: IEventBus) {
         COMPONENTS.register(eventBus)
     }
@@ -55,5 +60,10 @@ object MystcraftComponents {
     val CAMERA_PHOTO = COMPONENTS.registerComponentType("camera_photo") {
         it.persistent(CameraPhotoComponent.CODEC)
             .networkSynchronized(CameraPhotoComponent.STREAM_CODEC)
+    }
+
+    val WORLDGEN_PARAMETERS = COMPONENTS.registerComponentType("worldgen_parameters") {
+        it.persistent(WorldgenParametersComponent.CODEC)
+            .networkSynchronized(WorldgenParametersComponent.STREAM_CODEC)
     }
 }

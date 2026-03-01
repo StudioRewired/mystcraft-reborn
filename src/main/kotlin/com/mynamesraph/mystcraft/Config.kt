@@ -9,8 +9,6 @@ import net.neoforged.fml.event.config.ModConfigEvent
 import net.neoforged.neoforge.common.ModConfigSpec
 import java.util.stream.Collectors
 
-// An example config class. This is not required, but it's a good idea to have one to keep your config organized.
-// Demonstrates how to use Neo's config APIs
 @EventBusSubscriber(modid = Mystcraft.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 object Config {
     private val BUILDER: ModConfigSpec.Builder = ModConfigSpec.Builder()
@@ -25,7 +23,6 @@ object Config {
         BUILDER.comment("What you want the introduction message to be for the magic number")
             .define("magicNumberIntroduction", "The magic number is... ")
 
-    // a list of strings that are treated as resource locations for items
     private val ITEM_STRINGS: ModConfigSpec.ConfigValue<List<String>> =
         BUILDER.comment("A list of items to log on common setup.").defineListAllowEmpty(
             "items",
@@ -33,12 +30,21 @@ object Config {
             Config::validateItemName
         )
 
+    val ISOLATE_WORLDGEN_DEFAULT: ModConfigSpec.BooleanValue =
+        BUILDER.comment(
+            "Default value for whether Mystcraft ages use vanilla-isolated worldgen,",
+            "preventing biome mods like Terralith from influencing age terrain generation.",
+            "Biomes from those mods can still be assigned via the writing desk.",
+            "Can be overridden per-world with: /mystcraft isolateWorldgen <true|false>"
+        ).define("isolateWorldgenDefault", true)
+
     val SPEC: ModConfigSpec = BUILDER.build()
 
     var logDirtBlock: Boolean = false
     var magicNumber: Int = 0
     lateinit var magicNumberIntroduction: String
     lateinit var items: Set<Item>
+    var isolateWorldgenDefault: Boolean = true
 
     private fun validateItemName(obj: Any): Boolean {
         return obj is String && BuiltInRegistries.ITEM.containsKey(ResourceLocation.parse(obj))
@@ -49,12 +55,9 @@ object Config {
         logDirtBlock = LOG_DIRT_BLOCK.get()
         magicNumber = MAGIC_NUMBER.get()
         magicNumberIntroduction = MAGIC_NUMBER_INTRODUCTION.get()
-
-        // convert the list of strings into a set of items
+        isolateWorldgenDefault = ISOLATE_WORLDGEN_DEFAULT.get()
         items = ITEM_STRINGS.get().stream().map { itemName: String? ->
-            BuiltInRegistries.ITEM[ResourceLocation.parse(
-                itemName
-            )]
+            BuiltInRegistries.ITEM[ResourceLocation.parse(itemName)]
         }.collect(Collectors.toSet())
     }
 }

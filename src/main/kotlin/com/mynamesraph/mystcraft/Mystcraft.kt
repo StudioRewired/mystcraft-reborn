@@ -43,6 +43,16 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar
 import com.mynamesraph.mystcraft.data.networking.packet.SendCameraPhotoPacket
 import com.mynamesraph.mystcraft.events.CameraEvents
 import com.mynamesraph.mystcraft.data.networking.packet.SendCameraVideoPacket
+import com.mynamesraph.mystcraft.ui.screen.PrintingTableScreen
+import com.mynamesraph.mystcraft.data.networking.packet.OpenLecternScreenPacket
+import com.mynamesraph.mystcraft.data.networking.packet.PictureBookPlayerUpdatePacket
+import com.mynamesraph.mystcraft.client.PictureBookPlayerRenderer
+import com.mynamesraph.mystcraft.commands.MystcraftCommands
+import com.mynamesraph.mystcraft.data.networking.packet.EditingTableConfirmPacket
+import com.mynamesraph.mystcraft.events.PictureBookPlayerEvents
+import com.mynamesraph.mystcraft.ui.screen.BookBagScreen
+import com.mynamesraph.mystcraft.ui.screen.EditingTableScreen
+
 
 @Mod(Mystcraft.MOD_ID)
 class Mystcraft(modEventBus: IEventBus, modContainer: ModContainer) {
@@ -112,6 +122,24 @@ class Mystcraft(modEventBus: IEventBus, modContainer: ModContainer) {
                     SendCameraVideoPacket.STREAM_CODEC,
                     { data, context -> MystCraftServerPayloadHandler.handleCameraVideoReceived(data, context) }
                 )
+
+                registrar.playToClient(
+                    OpenLecternScreenPacket.TYPE,
+                    OpenLecternScreenPacket.STREAM_CODEC,
+                    { data, context -> MystCraftClientPayloadHandler.handleOpenLecternScreen(data, context) }
+                )
+
+                registrar.playToServer(
+                    PictureBookPlayerUpdatePacket.ID,
+                    PictureBookPlayerUpdatePacket.STREAM_CODEC,
+                    { data, context -> MystCraftServerPayloadHandler.handlePictureBookPlayerUpdate(data, context) }
+                )
+
+                registrar.playToServer(
+                    EditingTableConfirmPacket.TYPE,
+                    EditingTableConfirmPacket.STREAM_CODEC,
+                    { data, context -> MystCraftServerPayloadHandler.handleEditingTableConfirm(data, context) }
+                )
             }
         }
 
@@ -121,12 +149,26 @@ class Mystcraft(modEventBus: IEventBus, modContainer: ModContainer) {
             @SubscribeEvent
             fun onClientSetup(event: FMLClientSetupEvent?) {
                 // Client setup code
+
             }
 
             @SubscribeEvent
             fun registerScreens(event: RegisterMenuScreensEvent) {
-                event.register(LINKING_BOOK_MENU.get(), ::LecternLinkingBookScreen)
                 event.register(WRITING_DESK_MENU.get(), ::WritingDeskScreen)
+                event.register(MystcraftMenus.PRINTING_TABLE_MENU.get(), ::PrintingTableScreen)
+                event.register(MystcraftMenus.EDITING_TABLE_MENU.get(), ::EditingTableScreen)
+
+                event.register(MystcraftMenus.BOOK_BAG_MENU.get()) { menu, inv, title ->
+                    BookBagScreen(menu, inv, title)
+                }
+            }
+
+            @SubscribeEvent
+            fun onRegisterRenderers(event: net.neoforged.neoforge.client.event.EntityRenderersEvent.RegisterRenderers) {
+                event.registerBlockEntityRenderer(
+                    MystcraftBlockEntities.PICTURE_BOOK_PLAYER_BLOCK_ENTITY.get(),
+                    ::PictureBookPlayerRenderer
+                )
             }
 
             @SubscribeEvent
@@ -171,6 +213,14 @@ class Mystcraft(modEventBus: IEventBus, modContainer: ModContainer) {
         if (FMLEnvironment.dist.isClient) {
             NeoForge.EVENT_BUS.register(LinkingBookCraftEvents)
             NeoForge.EVENT_BUS.register(CameraEvents)  // add this
+        }
+
+        if (FMLEnvironment.dist.isClient) {
+            NeoForge.EVENT_BUS.register(PictureBookPlayerEvents)
+        }
+
+        NeoForge.EVENT_BUS.addListener { event: net.neoforged.neoforge.event.RegisterCommandsEvent ->
+            MystcraftCommands.register(event.dispatcher)
         }
 
     }

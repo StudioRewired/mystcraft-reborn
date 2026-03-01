@@ -2,14 +2,16 @@ package com.mynamesraph.mystcraft.data.networking.handlers
 
 import com.mojang.logging.LogUtils
 import com.mynamesraph.mystcraft.Mystcraft
-import com.mynamesraph.mystcraft.block.portal.BookShreddingReceptacleBlockEntity
-import com.mynamesraph.mystcraft.block.writing.WritingDeskBlockEntity
+import com.mynamesraph.mystcraft.block.editing.EditingTableBlockEntity
+import com.mynamesraph.mystcraft.block.receptacle.BookShreddingReceptacleBlockEntity
+import com.mynamesraph.mystcraft.block.table.writing.WritingDeskBlockEntity
 import com.mynamesraph.mystcraft.component.BiomeSymbolsComponent
 import com.mynamesraph.mystcraft.component.LocationComponent
 import com.mynamesraph.mystcraft.component.LocationDisplayComponent
 import com.mynamesraph.mystcraft.component.PreviewImageComponent
 import com.mynamesraph.mystcraft.component.RotationComponent
 import com.mynamesraph.mystcraft.data.networking.packet.AgeDeleteConfirmedPacket
+import com.mynamesraph.mystcraft.data.networking.packet.EditingTableConfirmPacket
 import com.mynamesraph.mystcraft.data.networking.packet.LinkingBookLecternTravelPacket
 import com.mynamesraph.mystcraft.data.networking.packet.LinkingBookTravelPacket
 import com.mynamesraph.mystcraft.data.networking.packet.SendPreviewImagePacket
@@ -30,10 +32,14 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.block.entity.LecternBlockEntity
 import net.neoforged.neoforge.network.handling.IPayloadContext
 import com.mynamesraph.mystcraft.item.DescriptiveBookItem
-import com.mynamesraph.mystcraft.component.CameraPhotoComponent
 import com.mynamesraph.mystcraft.data.networking.packet.SendCameraPhotoPacket
-import com.mynamesraph.mystcraft.item.CameraItem
 import com.mynamesraph.mystcraft.data.networking.packet.SendCameraVideoPacket
+import com.mynamesraph.mystcraft.data.networking.packet.PictureBookPlayerUpdatePacket
+import net.minecraft.world.entity.item.ItemEntity
+import net.minecraft.world.level.block.state.properties.BlockStateProperties
+import net.minecraft.core.Direction
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.Items
 
 class MystCraftServerPayloadHandler {
     companion object {
@@ -178,28 +184,30 @@ class MystCraftServerPayloadHandler {
                 val player = context.player()
                 val inventory = player.inventory
 
-                for (i in 0 until inventory.containerSize) {
-                    val stack = inventory.getItem(i)
-                    if (stack.item is com.mynamesraph.mystcraft.item.PictureBookItem
-                        && !stack.has(MystcraftComponents.PREVIEW_IMAGE)
-                    ) {
-                        stack.set(
-                            MystcraftComponents.PREVIEW_IMAGE.get(),
-                            PreviewImageComponent(listOf(data.jpeg))
-                        )
-                        player.displayClientMessage(
-                            Component.literal("Photo saved to picture book."),
-                            true
-                        )
-                        return@enqueueWork
-                    }
+                // Find paper in inventory
+                val paperSlot = (0 until inventory.containerSize).firstOrNull { i ->
+                    inventory.getItem(i).item == Items.PAPER
                 }
 
-                // No empty picture book found — photo is lost
-                player.displayClientMessage(
-                    Component.literal("No empty picture book in inventory. Photo lost."),
-                    true
+                if (paperSlot == null) {
+                    player.displayClientMessage(
+                        Component.literal("No paper in inventory. Photo lost."),
+                        true
+                    )
+                    return@enqueueWork
+                }
+
+                // Consume one paper
+                inventory.getItem(paperSlot).shrink(1)
+
+                // Give picture book with photo
+                val pictureBook = ItemStack(MystcraftItems.PICTURE_BOOK.get())
+                pictureBook.set(
+                    MystcraftComponents.PREVIEW_IMAGE.get(),
+                    PreviewImageComponent(listOf(data.jpeg))
                 )
+                player.inventory.add(pictureBook)
+                player.displayClientMessage(Component.literal("Photo saved to picture book."), true)
             }
         }
 
@@ -208,27 +216,86 @@ class MystCraftServerPayloadHandler {
                 val player = context.player()
                 val inventory = player.inventory
 
-                for (i in 0 until inventory.containerSize) {
-                    val stack = inventory.getItem(i)
-                    if (stack.item is com.mynamesraph.mystcraft.item.PictureBookItem
-                        && !stack.has(MystcraftComponents.PREVIEW_IMAGE)
-                    ) {
-                        stack.set(
-                            MystcraftComponents.PREVIEW_IMAGE.get(),
-                            PreviewImageComponent(data.frames)
-                        )
-                        player.displayClientMessage(
-                            Component.literal("Video saved to picture book."),
-                            true
-                        )
-                        return@enqueueWork
-                    }
+                val paperSlot = (0 until inventory.containerSize).firstOrNull { i ->
+                    inventory.getItem(i).item == Items.PAPER
                 }
 
-                player.displayClientMessage(
-                    Component.literal("No empty picture book in inventory. Video lost."),
-                    true
+                if (paperSlot == null) {
+                    player.displayClientMessage(
+                        Component.literal("No paper in inventory. Video lost."),
+                        true
+                    )
+                    return@enqueueWork
+                }
+
+                inventory.getItem(paperSlot).shrink(1)
+
+                val pictureBook = ItemStack(MystcraftItems.PICTURE_BOOK.get())
+                pictureBook.set(
+                    MystcraftComponents.PREVIEW_IMAGE.get(),
+                    PreviewImageComponent(data.frames)
                 )
+                player.inventory.add(pictureBook)
+                player.displayClientMessage(Component.literal("Video saved to picture book."), true)
+            }
+        }
+
+        fun handlePictureBookPlayerUpdate(data: PictureBookPlayerUpdatePacket, context: IPayloadContext) {
+            context.enqueueWork {
+                val player = context.player()
+                val level = player.level()
+                val be = level.getBlockEntity(data.pos) as?
+                        com.mynamesraph.mystcraft.block.mediaplayer.PictureBookPlayerBlockEntity ?: return@enqueueWork
+
+                if (data.removeBook) {
+                    be.clearLightBlocks(level)
+                    val stack = be.removeBook()
+                    if (!stack.isEmpty) {
+                        val state = level.getBlockState(data.pos)
+                        val facing = state.getValue(BlockStateProperties.FACING)
+                        // UP/DOWN have no meaningful stepX/Z for ejection, so just drop above the block
+                        val ejectX = if (facing.axis.isHorizontal) facing.stepX * 0.7 else 0.0
+                        val ejectY = if (facing == Direction.UP) 1.0 else 0.5
+                        val ejectZ = if (facing.axis.isHorizontal) facing.stepZ * 0.7 else 0.0
+                        val entity = ItemEntity(
+                            level,
+                            data.pos.x + 0.5 + ejectX,
+                            data.pos.y + ejectY,
+                            data.pos.z + 0.5 + ejectZ,
+                            stack
+                        )
+                        entity.setDefaultPickUpDelay()
+                        level.addFreshEntity(entity)
+                    }
+                } else {
+                    be.displayWidth     = data.width
+                    be.displayHeight    = data.height
+                    be.backlightOn      = data.backlight
+                    be.verticalOffset   = data.verticalOffset
+                    be.horizontalOffset = data.horizontalOffset
+                    be.clearLightBlocks(level)
+                    be.placeLightBlocks(level)
+                    be.rotation = data.rotation
+                }
+
+                level.sendBlockUpdated(data.pos, level.getBlockState(data.pos), level.getBlockState(data.pos), 3)
+            }
+        }
+
+        fun handleEditingTableConfirm(data: EditingTableConfirmPacket, context: IPayloadContext) {
+            context.enqueueWork {
+                val player = context.player()
+                val level = player.level()
+                val be = level.getBlockEntity(data.pos) as? EditingTableBlockEntity ?: return@enqueueWork
+
+                val output = be.confirmAndBuild()
+                println("DEBUG confirm: output=$output, hasWGP=${output.has(MystcraftComponents.WORLDGEN_PARAMETERS)}, hasDimID=${output.has(MystcraftComponents.DIMENSION_ID)}")
+
+                if (!output.isEmpty) {
+                    if (!player.inventory.add(output)) {
+                        player.drop(output, false)
+                    }
+                }
             }
         }
 

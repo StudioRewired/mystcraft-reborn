@@ -18,7 +18,6 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.DyeColor
 import net.minecraft.world.item.DyeItem
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.level.GameRules
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.LevelAccessor
 import net.minecraft.world.level.block.*
@@ -32,6 +31,8 @@ import net.minecraft.world.level.portal.DimensionTransition
 import net.minecraft.world.phys.BlockHitResult
 import net.neoforged.fml.ModList
 import com.mynamesraph.mystcraft.RewindTool.RewindEvents
+import com.mynamesraph.mystcraft.block.receptacle.BookReceptacleBlock
+import com.mynamesraph.mystcraft.block.receptacle.BookReceptacleBlockEntity
 
 
 class LinkPortalBlock(properties: Properties) : HalfTransparentBlock(properties), EntityBlock, Portal {

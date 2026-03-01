@@ -26,9 +26,9 @@ object CameraPreviewCapture {
     const val JPEG_QUALITY = 40
 
     // Video uses lower quality to keep frame sizes manageable
-    private val VIDEO_CAPTURE_WIDTH = 256
-    private val VIDEO_CAPTURE_HEIGHT = 64
-    private val VIDEO_JPEG_QUALITY = 30
+    private val VIDEO_CAPTURE_WIDTH = 320
+    private val VIDEO_CAPTURE_HEIGHT = 112
+    private val VIDEO_JPEG_QUALITY = 50
 
     private val compressionExecutor = Executors.newSingleThreadExecutor { r ->
         Thread(r, "MystcraftCameraCompression").also { it.isDaemon = true }

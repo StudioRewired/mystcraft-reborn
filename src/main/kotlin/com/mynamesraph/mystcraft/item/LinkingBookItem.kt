@@ -95,14 +95,38 @@ open class LinkingBookItem(properties: Properties) : Item(properties) {
             val transition = getDestination(level, entity, location, rotation)
             val destLevel = transition.newLevel()
 
+            // Collect nearby mobs before teleporting the player
+            val nearbyMobs = if (entity is Player) {
+                level.getEntitiesOfClass(
+                    net.minecraft.world.entity.Mob::class.java,
+                    entity.boundingBox.inflate(6.0)
+                )
+            } else emptyList()
+
             if (destLevel == entity.level()) {
-                // Same dimension — changeDimension is a no-op here, use teleportTo instead
                 val pos = transition.pos()
                 entity.teleportTo(pos.x, pos.y, pos.z)
                 entity.setYRot(transition.yRot())
                 entity.setXRot(transition.xRot())
             } else {
                 entity.changeDimension(transition)
+            }
+
+            // Teleport nearby mobs to the same destination
+            nearbyMobs.forEach { mob ->
+                val mobTransition = DimensionTransition(
+                    transition.newLevel(),
+                    transition.pos(),
+                    mob.deltaMovement,
+                    mob.yRot,
+                    mob.xRot,
+                    DimensionTransition.DO_NOTHING
+                )
+                if (destLevel == mob.level()) {
+                    mob.teleportTo(transition.pos().x, transition.pos().y, transition.pos().z)
+                } else {
+                    mob.changeDimension(mobTransition)
+                }
             }
         }
     }

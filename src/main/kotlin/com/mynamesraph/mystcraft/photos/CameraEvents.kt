@@ -24,6 +24,7 @@ import net.neoforged.neoforge.client.event.ViewportEvent
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers
 import net.neoforged.neoforge.network.PacketDistributor
 import org.lwjgl.glfw.GLFW
+import net.minecraft.world.item.Items
 
 
 @EventBusSubscriber(modid = Mystcraft.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = [Dist.CLIENT])
@@ -64,14 +65,13 @@ object CameraEvents {
         val mc = Minecraft.getInstance()
         val player = mc.player ?: return
 
-        val hasEmptyBook = (0 until player.inventory.containerSize).any { i ->
-            val stack = player.inventory.getItem(i)
-            stack.item is PictureBookItem && !stack.has(MystcraftComponents.PREVIEW_IMAGE)
+        val hasPaper = (0 until player.inventory.containerSize).any { i ->
+            player.inventory.getItem(i).item == Items.PAPER
         }
 
-        if (!hasEmptyBook) {
+        if (!hasPaper) {
             player.displayClientMessage(
-                Component.literal("No empty picture book in inventory."),
+                Component.literal("No paper in inventory."),
                 true
             )
             return
@@ -138,8 +138,7 @@ object CameraEvents {
         if (pendingCaptureTicks > 0) {
             pendingCaptureTicks--
             if (pendingCaptureTicks == 0) {
-                if (isVideoMode) startVideoCapture(mc)
-                else doPhotoCapture(mc)
+                postCountdownTicks = 6  // let GUI render clean frames before capturing
             }
         }
 
@@ -152,7 +151,7 @@ object CameraEvents {
             }
         }
 
-// Video frame scheduling — runs after countdown ends
+        // Video frame scheduling — runs after countdown ends
         if (isVideoMode && captureScheduled && pendingCaptureTicks == 0) {
             videoTicksElapsed++
             if (videoTicksElapsed % PreviewImageComponent.TICKS_BETWEEN_FRAMES == 0) {

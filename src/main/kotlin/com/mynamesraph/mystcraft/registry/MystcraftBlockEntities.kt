@@ -1,15 +1,19 @@
 package com.mynamesraph.mystcraft.registry
 
 import com.mynamesraph.mystcraft.Mystcraft
-import com.mynamesraph.mystcraft.block.portal.BookReceptacleBlockEntity
+import com.mynamesraph.mystcraft.block.receptacle.BookReceptacleBlockEntity
 import com.mynamesraph.mystcraft.block.portal.LinkPortalBlockEntity
-import com.mynamesraph.mystcraft.block.writing.WritingDeskBlockEntity
+import com.mynamesraph.mystcraft.block.table.writing.WritingDeskBlockEntity
 import net.minecraft.core.registries.Registries
 import net.minecraft.world.level.block.entity.BlockEntityType
 import net.neoforged.bus.api.IEventBus
 import net.neoforged.neoforge.registries.DeferredRegister
 import java.util.function.Supplier
-import com.mynamesraph.mystcraft.block.portal.BookShreddingReceptacleBlockEntity
+import com.mynamesraph.mystcraft.block.receptacle.BookShreddingReceptacleBlockEntity
+import com.mynamesraph.mystcraft.block.printing.PrintingTableBlockEntity
+import com.mynamesraph.mystcraft.block.mediaplayer.PictureBookPlayerBlockEntity
+import com.mynamesraph.mystcraft.block.receptacle.MediaExportReceptacleBlockEntity
+import com.mynamesraph.mystcraft.block.editing.EditingTableBlockEntity
 
 object MystcraftBlockEntities {
     val BLOCK_ENTITY_TYPES: DeferredRegister<BlockEntityType<*>> = DeferredRegister.create(
@@ -57,6 +61,46 @@ object MystcraftBlockEntities {
             BlockEntityType.Builder.of(
                 ::BookShreddingReceptacleBlockEntity,
                 MystcraftBlocks.BOOK_SHREDDING_RECEPTACLE.get()
+            ).build(null)
+        }
+    )
+
+    val PRINTING_TABLE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+        "printing_table",
+        Supplier {
+            BlockEntityType.Builder.of(
+                ::PrintingTableBlockEntity,
+                MystcraftBlocks.PRINTING_TABLE.get()
+            ).build(null)
+        }
+    )
+
+    val PICTURE_BOOK_PLAYER_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+        "picture_book_player",
+        Supplier {
+            BlockEntityType.Builder.of(
+                ::PictureBookPlayerBlockEntity,
+                MystcraftBlocks.PICTURE_BOOK_PLAYER.get()
+            ).build(null)
+        }
+    )
+
+    val MEDIA_EXPORT_RECEPTACLE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+        "media_export_receptacle",
+        Supplier {
+            BlockEntityType.Builder.of(
+                ::MediaExportReceptacleBlockEntity,
+                MystcraftBlocks.MEDIA_EXPORT_RECEPTACLE.get()
+            ).build(null)
+        }
+    )
+
+    val EDITING_TABLE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+        "editing_table",
+        Supplier {
+            BlockEntityType.Builder.of(
+                ::EditingTableBlockEntity,
+                MystcraftBlocks.EDITING_TABLE.get()
             ).build(null)
         }
     )

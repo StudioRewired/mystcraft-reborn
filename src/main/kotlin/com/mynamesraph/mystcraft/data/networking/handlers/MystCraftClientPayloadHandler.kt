@@ -9,6 +9,12 @@ import net.neoforged.neoforge.network.handling.IPayloadContext
 import net.neoforged.neoforge.client.event.ClientTickEvent
 import net.neoforged.neoforge.common.NeoForge
 import net.neoforged.bus.api.SubscribeEvent
+import com.mynamesraph.mystcraft.data.networking.packet.OpenLecternScreenPacket
+import com.mynamesraph.mystcraft.ui.screen.LecternLinkingBookScreen
+import com.mynamesraph.mystcraft.component.LocationDisplayComponent
+import com.mynamesraph.mystcraft.registry.MystcraftComponents
+import net.minecraft.network.chat.Component
+
 
 class MystCraftClientPayloadHandler {
     companion object {
@@ -22,6 +28,21 @@ class MystCraftClientPayloadHandler {
 
         fun handleTriggerPreviewCapture(data: TriggerPreviewCapturePacket, context: IPayloadContext) {
             // No longer used — capture is triggered by screen close event instead
+        }
+
+
+        fun handleOpenLecternScreen(data: OpenLecternScreenPacket, context: IPayloadContext) {
+            context.enqueueWork {
+                val mc = Minecraft.getInstance()
+                val locationDisplay = data.bookStack.components.get(MystcraftComponents.LOCATION_DISPLAY.get())
+                mc.setScreen(
+                    LecternLinkingBookScreen(
+                        data.pos,
+                        data.bookStack,
+                        locationDisplay?.name ?: Component.empty()
+                    )
+                )
+            }
         }
 
     }

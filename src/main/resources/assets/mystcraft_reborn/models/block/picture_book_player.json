@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "down":     "mystcraft_reborn:block/picture_book_player_side",
+    "up":       "mystcraft_reborn:block/picture_book_player_side",
+    "north":    "mystcraft_reborn:block/picture_book_player_front",
+    "south":    "mystcraft_reborn:block/picture_book_player_side",
+    "east":     "mystcraft_reborn:block/picture_book_player_side",
+    "west":     "mystcraft_reborn:block/picture_book_player_side",
+    "particle": "mystcraft_reborn:block/picture_book_player_side"
+  }
+}

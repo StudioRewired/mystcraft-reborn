@@ -31,6 +31,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import com.mynamesraph.mystcraft.data.networking.packet.OpenLecternScreenPacket;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraft.server.level.ServerPlayer;
 
 @Mixin(LecternBlock.class)
 public class LecternBlockMixin extends Block {
@@ -70,37 +73,27 @@ public class LecternBlockMixin extends Block {
     protected void useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult, CallbackInfoReturnable<InteractionResult> cir) {
         if (state.getValue(HAS_BOOK) && state.getValue(IS_MYSTCRAFT_BOOK)) {
             if (!level.isClientSide) {
-                mystcraft$openScreen(level,pos,player);
+                mystcraft$openScreen(level, pos, player);
             }
-
             cir.setReturnValue(InteractionResult.sidedSuccess(level.isClientSide));
         }
     }
 
-
     @Unique
-    protected void mystcraft$openScreen(Level level, BlockPos pos, Player serverPlayer) {
+    protected void mystcraft$openScreen(Level level, BlockPos pos, Player player) {
         BlockEntity be = level.getBlockEntity(pos);
-        if (be instanceof LecternBlockEntity lecternBE && be.getBlockState().getValue(IS_MYSTCRAFT_BOOK)) {
-            var linkingBook = lecternBE.getBook().getItem();
-
-            if (linkingBook instanceof LinkingBookItem) {
-                var locationDisplay = lecternBE.getBook().getComponents().get(MystcraftComponents.INSTANCE.getLOCATION_DISPLAY().get());
-
-                if (locationDisplay instanceof LocationDisplayComponent) {
-                    serverPlayer.openMenu(
-                            new SimpleMenuProvider(
-                                ((containerId, playerInventory, player) -> new LinkingBookMenu(containerId,playerInventory,pos)),
-                                locationDisplay.getName()
-                            ),
-                            pos
-                    );
-                }
-
-                serverPlayer.awardStat(Stats.INTERACT_WITH_LECTERN);
-            }
-            else {
-                LogUtils.getLogger().warn("Lectern has is_mystcraft_book set to true without a mystcraft book inside it!");
+        if (be instanceof LecternBlockEntity lecternBE) {
+            var book = lecternBE.getBook();
+            var locationDisplay = book.getComponents().get(
+                    MystcraftComponents.INSTANCE.getLOCATION_DISPLAY().get()
+            );
+            if (locationDisplay instanceof LocationDisplayComponent) {
+                // Send the full book stack to the client
+                net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(
+                        (net.minecraft.server.level.ServerPlayer) player,
+                        new OpenLecternScreenPacket(pos, book.copy())
+                );
+                player.awardStat(Stats.INTERACT_WITH_LECTERN);
             }
         }
     }

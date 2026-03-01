@@ -22,6 +22,8 @@ import com.mynamesraph.mystcraft.RewindTool.RewindBookItem
 import com.mynamesraph.mystcraft.item.ColoringBookItem
 import com.mynamesraph.mystcraft.item.CameraItem
 import com.mynamesraph.mystcraft.item.PictureBookItem
+import com.mynamesraph.mystcraft.item.BiomeEncyclopediaItem
+import com.mynamesraph.mystcraft.item.BookBagItem
 
 object MystcraftItems {
     val ITEMS: DeferredRegister.Items = DeferredRegister.createItems(
@@ -169,5 +171,15 @@ object MystcraftItems {
                     .rarity(Rarity.UNCOMMON)
             )
         }
+    )
+
+    val BIOME_ENCYCLOPEDIA: DeferredItem<Item> = ITEMS.register(
+        "biome_encyclopedia",
+        Supplier { BiomeEncyclopediaItem(Item.Properties().stacksTo(1)) }
+    )
+
+    val BOOK_BAG: DeferredItem<Item> = ITEMS.register(
+        "book_bag",
+        Supplier { BookBagItem(Item.Properties().stacksTo(1)) }
     )
 }

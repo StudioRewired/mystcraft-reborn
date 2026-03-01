@@ -16,4 +16,7 @@ object MystcraftTags {
         Registries.ITEM,
         ResourceLocation.fromNamespaceAndPath(Mystcraft.MOD_ID,"books/notebook")
     )
+
+
+
 }

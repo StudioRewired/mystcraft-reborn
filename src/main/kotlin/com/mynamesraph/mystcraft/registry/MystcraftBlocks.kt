@@ -5,9 +5,10 @@ import com.mynamesraph.mystcraft.block.crystal.BuddingCrystalBlock
 import com.mynamesraph.mystcraft.block.crystal.CrystalBlock
 import com.mynamesraph.mystcraft.block.crystal.CrystalClusterBlock
 import com.mynamesraph.mystcraft.block.crystal.CrystalColor
-import com.mynamesraph.mystcraft.block.portal.BookReceptacleBlock
+import com.mynamesraph.mystcraft.block.editing.EditingTableBlock
+import com.mynamesraph.mystcraft.block.receptacle.BookReceptacleBlock
 import com.mynamesraph.mystcraft.block.portal.LinkPortalBlock
-import com.mynamesraph.mystcraft.block.writing.WritingDeskBlock
+import com.mynamesraph.mystcraft.block.table.writing.WritingDeskBlock
 import net.minecraft.world.item.BlockItem
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.Blocks
@@ -18,8 +19,13 @@ import net.neoforged.neoforge.registries.DeferredBlock
 import net.neoforged.neoforge.registries.DeferredItem
 import net.neoforged.neoforge.registries.DeferredRegister
 import java.util.function.Supplier
-import com.mynamesraph.mystcraft.block.portal.BookShreddingReceptacleBlock
-
+import com.mynamesraph.mystcraft.block.receptacle.BookShreddingReceptacleBlock
+import com.mynamesraph.mystcraft.block.printing.PrintingTableBlock
+import com.mynamesraph.mystcraft.block.mediaplayer.PictureBookPlayerBlock
+import com.mynamesraph.mystcraft.block.receptacle.MediaExportReceptacleBlock
+import net.minecraft.world.level.block.SoundType
+import net.minecraft.world.level.material.MapColor
+import net.minecraft.world.item.Item
 
 object MystcraftBlocks {
     val BLOCKS: DeferredRegister.Blocks = DeferredRegister.createBlocks(
@@ -41,7 +47,10 @@ object MystcraftBlocks {
     val LINK_PORTAL: DeferredBlock<Block> = BLOCKS.register(
         "link_portal",
         Supplier {
-            LinkPortalBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_PORTAL).noLootTable().randomTicks())
+            LinkPortalBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_PORTAL)
+                .randomTicks()
+                .requiresCorrectToolForDrops()
+                .strength(3.0f, 6.0f))
         }
     )
 
@@ -608,6 +617,55 @@ object MystcraftBlocks {
         "red_book_receptacle",
         RED_BOOK_RECEPTACLE
     )
+
+    val PRINTING_TABLE: DeferredBlock<Block> = BLOCKS.register(
+        "printing_table",
+        Supplier {
+            PrintingTableBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CRAFTING_TABLE))
+        }
+    )
+
+    val PRINTING_TABLE_ITEM: DeferredItem<BlockItem> = MystcraftItems.ITEMS.registerSimpleBlockItem(
+        "printing_table",
+        PRINTING_TABLE
+    )
+
+    val PICTURE_BOOK_PLAYER: DeferredBlock<Block> = BLOCKS.register(
+        "picture_book_player",
+        Supplier {
+            PictureBookPlayerBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).noOcclusion())
+        }
+    )
+
+    val PICTURE_BOOK_PLAYER_ITEM: DeferredItem<BlockItem> = MystcraftItems.ITEMS.registerSimpleBlockItem(
+        "picture_book_player",
+        PICTURE_BOOK_PLAYER
+    )
+
+    val MEDIA_EXPORT_RECEPTACLE: DeferredBlock<Block> = BLOCKS.register(
+        "media_export_receptacle",
+        Supplier {
+            MediaExportReceptacleBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).noOcclusion())
+        }
+    )
+
+    val MEDIA_EXPORT_RECEPTACLE_ITEM: DeferredItem<BlockItem> = MystcraftItems.ITEMS.registerSimpleBlockItem(
+        "media_export_receptacle",
+        MEDIA_EXPORT_RECEPTACLE
+    )
+
+    val EDITING_TABLE: DeferredBlock<Block> = BLOCKS.register(
+        "editing_table",
+        Supplier {
+            EditingTableBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CRAFTING_TABLE))
+        }
+    )
+
+    val EDITING_TABLE_ITEM: DeferredItem<BlockItem> = MystcraftItems.ITEMS.registerSimpleBlockItem(
+        "editing_table",
+        EDITING_TABLE
+    )
+
     //////////////////////////////////////////////////////////////
 
     fun register(eventBus: IEventBus) {

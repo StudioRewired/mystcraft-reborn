@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "mystcraft_reborn:block/editing_table" },
+    "facing=south": { "model": "mystcraft_reborn:block/editing_table", "y": 180 },
+    "facing=east":  { "model": "mystcraft_reborn:block/editing_table", "y": 90 },
+    "facing=west":  { "model": "mystcraft_reborn:block/editing_table", "y": 270 }
+  }
+}

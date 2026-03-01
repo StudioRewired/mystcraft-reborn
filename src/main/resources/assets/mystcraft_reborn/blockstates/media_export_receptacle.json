@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "mystcraft_reborn:block/media_export_receptacle" },
+    "facing=south": { "model": "mystcraft_reborn:block/media_export_receptacle", "y": 180 },
+    "facing=east":  { "model": "mystcraft_reborn:block/media_export_receptacle", "y": 90 },
+    "facing=west":  { "model": "mystcraft_reborn:block/media_export_receptacle", "y": 270 }
+  }
+}

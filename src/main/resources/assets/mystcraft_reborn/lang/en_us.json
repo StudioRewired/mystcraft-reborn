@@ -14,7 +14,7 @@
     "itemGroup.mystcraft_reborn": "Mystcraft Reborn",
     "item.mystcraft_reborn.linking_book": "Linking Book",
     "item.mystcraft_reborn.descriptive_book": "Descriptive Book",
-    "item.mystcraft_reborn.notebook": "Notebook",
+    "item.mystcraft_reborn.notebook": "Traveler's Notebook",
     "item.mystcraft_reborn.rewind_book": "Rewinding Book",
     "item.mystcraft_reborn.coloring_book": "Coloring Book",
     "block.mystcraft_reborn.book_shredding_receptacle": "Book Shredding Receptacle",
@@ -25,6 +25,15 @@
     "item.mystcraft_reborn.picture_book": "Picture Book",
     "block.mystcraft_reborn.writing_desk": "Writing Desk",
     "block.mystcraft_reborn.link_portal": "Link Portal",
+    "block.mystcraft_reborn.printing_table": "Printing Table",
+    "block.mystcraft_reborn.editing_table": "Editing Table",
+    "container.mystcraft_reborn.printing_table": "Printing Table",
+    "container.mystcraft_reborn.editing_table": "Editing Table",
+    "item.mystcraft_reborn.book_bag": "Book Bag",
+    "block.mystcraft_reborn.picture_book_player": "Book Player",
+    "block.mystcraft_reborn.media_export_receptacle": "Media Export Receptacle",
+    "item.mystcraft_reborn.biome_encyclopedia": "Biome Encyclopedia",
+
 
     "menu.title.mystcraft.linking_book_menu": "Linking Book Menu",
 
