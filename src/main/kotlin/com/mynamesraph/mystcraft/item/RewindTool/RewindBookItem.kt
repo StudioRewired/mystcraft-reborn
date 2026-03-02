@@ -41,19 +41,45 @@ class RewindBookItem(properties: Properties) : Item(properties) {
                 return InteractionResultHolder.fail(stack)
             }
 
+            // Collect nearby mobs before the player teleports, same 6-block radius as linking books
+            val nearbyMobs = level.getEntitiesOfClass(
+                net.minecraft.world.entity.Mob::class.java,
+                player.boundingBox.inflate(6.0)
+            )
+
             // Clear so you can't rewind twice
             player.removeData(MystcraftAttachments.REWIND_POSITION.get())
+
+            val destination = Vec3(saved.x, saved.y, saved.z)
 
             player.changeDimension(
                 DimensionTransition(
                     targetLevel,
-                    Vec3(saved.x, saved.y, saved.z),
+                    destination,
                     player.deltaMovement,
                     saved.yRot,
                     saved.xRot,
                     DimensionTransition.DO_NOTHING
                 )
             )
+
+            // Teleport nearby mobs to the same destination
+            nearbyMobs.forEach { mob ->
+                if (targetLevel == mob.level()) {
+                    mob.teleportTo(destination.x, destination.y, destination.z)
+                } else {
+                    mob.changeDimension(
+                        DimensionTransition(
+                            targetLevel,
+                            destination,
+                            mob.deltaMovement,
+                            mob.yRot,
+                            mob.xRot,
+                            DimensionTransition.DO_NOTHING
+                        )
+                    )
+                }
+            }
 
             return InteractionResultHolder.success(stack)
         }

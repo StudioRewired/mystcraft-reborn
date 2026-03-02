@@ -163,32 +163,45 @@ class DescriptiveBookItem(properties: Properties) : LinkingBookItem(properties) 
     // Level creation helpers
     // ─────────────────────────────────────────────────────────────────────────
 
-    /** Fully deterministic generation driven by [WorldgenParametersComponent]. */
+    /** Fully deterministic generation driven by [WorldgenParametersComponent].
+     *  Any null tier-1 parameter is individually randomized in range [1,16],
+     *  keeping all values within the safe bounds accepted by AgeWorldgenParams. */
     private fun createParameterizedNoiseLevel(
         server: MinecraftServer,
         book: ItemStack,
         params: WorldgenParametersComponent
     ): LevelStem {
         val dimensionType = buildDimensionType(server, params)
-        val noiseSettings = AgeWorldgenParams.noiseSettings(params.verticalRange)
-        val seaLevel      = AgeWorldgenParams.seaLevel(params.seaLevel)
-        val large         = AgeWorldgenParams.useLargeBiomes(params.terrainTurbulence)
+
+        // Resolve each nullable param — null means "not set by player, randomize it".
+        // All values are clamped to [1,16] which is the safe input range for every
+        // AgeWorldgenParams function, preventing the out-of-range values that previously
+        // caused level.dat corruption.
+        val verticalRange     = (params.verticalRange     ?: Random.nextInt(1, 17)).coerceIn(1, 16)
+        val seaLevelParam     = (params.seaLevel          ?: Random.nextInt(1, 17)).coerceIn(1, 16)
+        val terrainTurbulence = (params.terrainTurbulence ?: Random.nextInt(1, 17)).coerceIn(1, 16)
+        val caveDensityParam  = (params.caveDensity       ?: Random.nextInt(1, 17)).coerceIn(1, 16)
+        val biomeSizeParam    = (params.biomeSize         ?: Random.nextInt(1, 17)).coerceIn(1, 16)
+
+        val noiseSettings = AgeWorldgenParams.noiseSettings(verticalRange)
+        val seaLevel      = AgeWorldgenParams.seaLevel(seaLevelParam)
+        val large         = AgeWorldgenParams.useLargeBiomes(terrainTurbulence)
 
         // Cave world overrides depth offset and cave multiplier for inverted terrain feel
         val depthOffset = if (params.caveWorld)
             AgeWorldgenParams.CAVE_WORLD_DEPTH_OFFSET
         else
-            AgeWorldgenParams.depthOffset(params.terrainTurbulence)
+            AgeWorldgenParams.depthOffset(terrainTurbulence)
 
         val caveMulti = if (params.caveWorld)
             AgeWorldgenParams.CAVE_WORLD_CAVE_MULTI
         else
-            AgeWorldgenParams.caveDensityMultiplier(params.caveDensity)
+            AgeWorldgenParams.caveDensityMultiplier(caveDensityParam)
 
         val noiseRouter = AgeWorldgenParams.buildNoiseRouter(server, large, depthOffset, caveMulti)
 
         val biomeSource = MultiNoiseBiomeSource.createFromList(
-            Climate.ParameterList(getBiomeList(book, server, params.biomeSize))
+            Climate.ParameterList(getBiomeList(book, server, biomeSizeParam))
         )
 
         val generator = NoiseBasedChunkGenerator(
@@ -202,10 +215,10 @@ class DescriptiveBookItem(properties: Properties) : LinkingBookItem(properties) 
                     SurfaceRuleData.overworld(),
                     OverworldBiomeBuilder().spawnTarget(),
                     seaLevel,
-                    /* disableMobGen */ params.noMobs,
-                    /* aquifers     */ !params.noAquifers,
-                    /* oreVeins     */ true,
-                    /* legacyRandom */ false
+                    params.noMobs,
+                    !params.noAquifers,
+                    true,
+                    false
                 )
             )
         )
@@ -244,11 +257,12 @@ class DescriptiveBookItem(properties: Properties) : LinkingBookItem(properties) 
             else -> 64
         }
 
+        // nextInt upper bound is exclusive, so (1, 17) gives the full [1,16] range
         val noiseRouter = AgeWorldgenParams.buildNoiseRouter(
             server,
             large          = Random.nextBoolean(),
-            depthOffset    = AgeWorldgenParams.depthOffset(Random.nextInt(1, 16)),
-            caveMultiplier = AgeWorldgenParams.caveDensityMultiplier(Random.nextInt(1, 16))
+            depthOffset    = AgeWorldgenParams.depthOffset(Random.nextInt(1, 17)),
+            caveMultiplier = AgeWorldgenParams.caveDensityMultiplier(Random.nextInt(1, 17))
         )
 
         val generator = NoiseBasedChunkGenerator(
@@ -280,14 +294,25 @@ class DescriptiveBookItem(properties: Properties) : LinkingBookItem(properties) 
         val dimensionType = if (params != null) buildDimensionType(server, params)
         else server.overworld().dimensionTypeRegistration()
 
+        // Resolve biomeSize — null means randomize, same safe range as elsewhere
+        val biomeSizeParam: Int? = params?.biomeSize?.coerceIn(1, 16)
+            ?: params?.let { Random.nextInt(1, 17) }
+
         val biomeSource = MultiNoiseBiomeSource.createFromList(
-            Climate.ParameterList(getBiomeList(book, server, params?.biomeSize))
+            Climate.ParameterList(getBiomeList(book, server, biomeSizeParam))
         )
 
         val densityFunctions = server.registryAccess().asGetterLookup()
             .lookupOrThrow(Registries.DENSITY_FUNCTION)
         val noiseParams = server.registryAccess().asGetterLookup()
             .lookupOrThrow(Registries.NOISE)
+
+        // Resolve seaLevel — null means randomize; 0 when no params at all (pure random flat)
+        val seaLevel = when {
+            params == null        -> 0
+            params.seaLevel != null -> AgeWorldgenParams.seaLevel(params.seaLevel.coerceIn(1, 16))
+            else                  -> AgeWorldgenParams.seaLevel(Random.nextInt(1, 17))
+        }
 
         val generator = NoiseBasedChunkGenerator(
             biomeSource,
@@ -299,7 +324,7 @@ class DescriptiveBookItem(properties: Properties) : LinkingBookItem(properties) 
                     flatNoiseRouter(densityFunctions, noiseParams, false),
                     SurfaceRuleData.overworld(),
                     OverworldBiomeBuilder().spawnTarget(),
-                    if (params != null) AgeWorldgenParams.seaLevel(params.seaLevel) else 0,
+                    seaLevel,
                     params?.noMobs ?: false,
                     !(params?.noAquifers ?: false),
                     true,
@@ -344,20 +369,28 @@ class DescriptiveBookItem(properties: Properties) : LinkingBookItem(properties) 
         biomeSizeLevel: Int?
     ): List<com.mojang.datafixers.util.Pair<ParameterPoint, Holder<Biome>>> {
         val biomeSymbols = book.components.get(MystcraftComponents.BIOME_SYMBOLS.get())
-        val spanHalf: Float = if (biomeSizeLevel != null)
+        // When biomeSizeLevel is set, all biomes share the same fixed span (deterministic).
+        // When null (random generation), each biome gets its own random span for variety.
+        val fixedSpan: Float? = if (biomeSizeLevel != null)
             AgeWorldgenParams.biomeSpanHalfWidth(biomeSizeLevel)
         else
-            Random.nextFloat()
+            null
 
-        fun makePoint() = ParameterPoint(
-            Climate.Parameter.span(-spanHalf, spanHalf),
-            Climate.Parameter.span(-spanHalf, spanHalf),
-            Climate.Parameter.span(-spanHalf, spanHalf),
-            Climate.Parameter.span(-spanHalf, spanHalf),
-            Climate.Parameter.span(-2.0f, 2.0f),
-            Climate.Parameter.span(-spanHalf, spanHalf),
-            if (biomeSizeLevel != null) 0L else Random.nextLong(0, Long.MAX_VALUE)
-        )
+        fun makePoint(): ParameterPoint {
+            val span = fixedSpan ?: Random.nextFloat()
+            return ParameterPoint(
+                Climate.Parameter.span(-span, span),
+                Climate.Parameter.span(-span, span),
+                Climate.Parameter.span(-span, span),
+                Climate.Parameter.span(-span, span),
+                Climate.Parameter.span(-2.0f, 2.0f),
+                Climate.Parameter.span(-span, span),
+                // Climate.ParameterPoint.CODEC encodes offset as (double)offset, validated
+                // against [0.0:1.0]. Large random longs fail this check and cause
+                // WorldGenSettings to be silently omitted from level.dat on save.
+                0L
+            )
+        }
 
         return if (biomeSymbols is BiomeSymbolsComponent) {
             buildList {
@@ -454,26 +487,27 @@ class DescriptiveBookItem(properties: Properties) : LinkingBookItem(properties) 
                 Component.literal("Edited Age")
                     .withStyle(Style.EMPTY.withItalic(false).withColor(0x55FF55))
             )
-            tooltipComponents.add(
-                Component.literal("  Turbulence: ${wgp.terrainTurbulence}/16")
-                    .withStyle(Style.EMPTY.withItalic(false).withColor(0xAAAAAA))
-            )
-            tooltipComponents.add(
-                Component.literal("  Sea Level: ${wgp.seaLevel}/16")
-                    .withStyle(Style.EMPTY.withItalic(false).withColor(0xAAAAAA))
-            )
-            tooltipComponents.add(
-                Component.literal("  Cave Density: ${wgp.caveDensity}/16")
-                    .withStyle(Style.EMPTY.withItalic(false).withColor(0xAAAAAA))
-            )
-            tooltipComponents.add(
-                Component.literal("  Biome Size: ${wgp.biomeSize}/16")
-                    .withStyle(Style.EMPTY.withItalic(false).withColor(0xAAAAAA))
-            )
-            tooltipComponents.add(
-                Component.literal("  Vertical Range: ${wgp.verticalRange}/16")
-                    .withStyle(Style.EMPTY.withItalic(false).withColor(0xAAAAAA))
-            )
+
+            // Helper: show "X/16" if the player set a value, or "randomized" in grey italic if not
+            fun paramLine(label: String, value: Int?) {
+                if (value != null)
+                    tooltipComponents.add(
+                        Component.literal("  $label: $value/16")
+                            .withStyle(Style.EMPTY.withItalic(false).withColor(0xAAAAAA))
+                    )
+                else
+                    tooltipComponents.add(
+                        Component.literal("  $label: randomized")
+                            .withStyle(Style.EMPTY.withItalic(true).withColor(0x666666))
+                    )
+            }
+
+            paramLine("Turbulence",     wgp.terrainTurbulence)
+            paramLine("Sea Level",      wgp.seaLevel)
+            paramLine("Cave Density",   wgp.caveDensity)
+            paramLine("Biome Size",     wgp.biomeSize)
+            paramLine("Vertical Range", wgp.verticalRange)
+
             if (wgp.superFlat)  tooltipComponents.add(Component.literal("  ✦ Super Flat")  .withStyle(Style.EMPTY.withItalic(false).withColor(0x55FF55)))
             if (wgp.noMobs)     tooltipComponents.add(Component.literal("  ✦ No Mobs")     .withStyle(Style.EMPTY.withItalic(false).withColor(0x55FF55)))
             if (wgp.caveWorld)  tooltipComponents.add(Component.literal("  ✦ Cave World")  .withStyle(Style.EMPTY.withItalic(false).withColor(0x55FF55)))

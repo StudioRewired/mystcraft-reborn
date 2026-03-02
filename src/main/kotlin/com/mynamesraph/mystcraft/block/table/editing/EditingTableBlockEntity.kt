@@ -68,10 +68,37 @@ class EditingTableBlockEntity(pos: BlockPos, state: BlockState) :
         val output = book.copy()
         output.set(MystcraftComponents.WORLDGEN_PARAMETERS.get(), buildParams())
 
-        // Consume everything
-        for (i in 0 until TOTAL_SLOTS) {
-            container.setStackInSlot(i, ItemStack.EMPTY)
+        // Consume the book slot entirely
+        container.setStackInSlot(SLOT_BOOK, ItemStack.EMPTY)
+
+        // For tier-1 items, only consume up to MAX_PARAM_STACK (16) total per key.
+        // We track how much of each key's budget has been spent as we scan slots,
+        // so excess stacks beyond the cap are left untouched.
+        val remaining = mutableMapOf<String, Int>()
+        TIER1_ITEMS.values.forEach { key -> remaining[key] = MAX_PARAM_STACK }
+
+        for (i in 0 until 16) {
+            val stack = container.getStackInSlot(i)
+            if (stack.isEmpty) continue
+
+            val key = TIER1_ITEMS[stack.item]
+            if (key != null) {
+                val budget = remaining[key] ?: 0
+                if (budget <= 0) continue  // already satisfied from an earlier slot
+                val toConsume = stack.count.coerceAtMost(budget)
+                stack.shrink(toConsume)
+                remaining[key] = budget - toConsume
+                container.setStackInSlot(i, stack)
+                continue
+            }
+
+            // Tier-2: consume exactly one item (the flag just needs presence)
+            if (TIER2_ITEMS.containsKey(stack.item)) {
+                stack.shrink(1)
+                container.setStackInSlot(i, stack)
+            }
         }
+
         setChanged()
         return output
     }
@@ -89,11 +116,11 @@ class EditingTableBlockEntity(pos: BlockPos, state: BlockState) :
             }
         }
         return WorldgenParametersComponent(
-            terrainTurbulence = counts["terrainTurbulence"] ?: 6,
-            seaLevel          = counts["seaLevel"]          ?: 6,
-            caveDensity       = counts["caveDensity"]       ?: 6,
-            biomeSize         = counts["biomeSize"]         ?: 6,
-            verticalRange     = counts["verticalRange"]     ?: 6,
+            terrainTurbulence = counts["terrainTurbulence"],
+            seaLevel          = counts["seaLevel"],
+            caveDensity       = counts["caveDensity"],
+            biomeSize         = counts["biomeSize"],
+            verticalRange     = counts["verticalRange"],
             superFlat         = counts.containsKey("superFlat"),
             noMobs            = counts.containsKey("noMobs"),
             caveWorld         = counts.containsKey("caveWorld"),

@@ -83,7 +83,7 @@ fun OverworldNoiseRouter(
 
     val erosion = NoiseRouterDataMixin.invokeGetFunction(
         densityFunctions,
-        if (large) NoiseRouterData.EROSION_LARGE else NoiseRouterData.EROSION_LARGE
+        if (large) NoiseRouterData.EROSION_LARGE else NoiseRouterData.EROSION
     )
 
     val depth = NoiseRouterDataMixin.invokeGetFunction(
@@ -198,7 +198,7 @@ fun flatNoiseRouter(
         densityFunctions, if (large) NoiseRouterData.CONTINENTS_LARGE else NoiseRouterData.CONTINENTS
     )
     val erosion = NoiseRouterDataMixin.invokeGetFunction(
-        densityFunctions, if (large) NoiseRouterData.EROSION_LARGE else NoiseRouterData.EROSION_LARGE
+        densityFunctions, if (large) NoiseRouterData.EROSION_LARGE else NoiseRouterData.EROSION
     )
     val depth = NoiseRouterDataMixin.invokeGetFunction(
         densityFunctions, if (large) NoiseRouterDataMixin.getDEPTH_LARGE() else NoiseRouterData.DEPTH
