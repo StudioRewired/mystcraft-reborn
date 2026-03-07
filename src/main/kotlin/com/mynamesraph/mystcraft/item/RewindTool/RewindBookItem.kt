@@ -1,5 +1,6 @@
 package com.mynamesraph.mystcraft.RewindTool
 
+import com.mynamesraph.mystcraft.registry.MystcraftSounds
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.InteractionHand
@@ -63,6 +64,22 @@ class RewindBookItem(properties: Properties) : Item(properties) {
                 )
             )
 
+            // Direct sound for the traveling player
+            if (player is net.minecraft.server.level.ServerPlayer) {
+                player.connection.send(
+                    net.minecraft.network.protocol.game.ClientboundSoundPacket(
+                        net.minecraft.core.Holder.direct(MystcraftSounds.LINK_TRAVEL.get()),
+                        net.minecraft.sounds.SoundSource.PLAYERS,
+                        player.blockX.toDouble(),
+                        player.blockY.toDouble(),
+                        player.blockZ.toDouble(),
+                        1.0f,
+                        1.0f,
+                        player.level().random.nextLong()
+                    )
+                )
+            }
+
             // Teleport nearby mobs to the same destination
             nearbyMobs.forEach { mob ->
                 if (targetLevel == mob.level()) {
@@ -80,6 +97,7 @@ class RewindBookItem(properties: Properties) : Item(properties) {
                     )
                 }
             }
+
 
             return InteractionResultHolder.success(stack)
         }

@@ -19,6 +19,8 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.portal.DimensionTransition
 import thedarkcolour.kotlinforforge.neoforge.forge.vectorutil.v3d.toVec3
 import com.mynamesraph.mystcraft.RewindTool.RewindEvents
+import com.mynamesraph.mystcraft.registry.MystcraftSounds
+import net.neoforged.fml.loading.FMLEnvironment
 
 open class LinkingBookItem(properties: Properties) : Item(properties) {
 
@@ -42,9 +44,18 @@ open class LinkingBookItem(properties: Properties) : Item(properties) {
         tooltipFlag: TooltipFlag
     ) {
         val display = stack.components.get(MystcraftComponents.LOCATION_DISPLAY.get())
-
         if (display is LocationDisplayComponent) {
             tooltipComponents.add(display.name)
+        }
+
+        // Preview thumbnail — client only
+        if (FMLEnvironment.dist.isClient) {
+            val preview = stack.get(MystcraftComponents.PREVIEW_IMAGE.get())
+            if (preview != null) {
+                tooltipComponents.addAll(
+                    com.mynamesraph.mystcraft.client.PictureBookTooltipRenderer.getTooltipLines(preview)
+                )
+            }
         }
     }
 
@@ -95,6 +106,20 @@ open class LinkingBookItem(properties: Properties) : Item(properties) {
             val transition = getDestination(level, entity, location, rotation)
             val destLevel = transition.newLevel()
 
+            // Positional sound at source for nearby players
+            val sourcePos = entity.position()
+            (entity.level() as ServerLevel).playSound(
+                entity as? net.minecraft.world.entity.player.Player,  // excluded player
+                sourcePos.x,
+                sourcePos.y,
+                sourcePos.z,
+                MystcraftSounds.LINK_TRAVEL.get(),
+                net.minecraft.sounds.SoundSource.PLAYERS,
+                1.0f,
+                1.0f
+            )
+
+
             // Collect nearby mobs before teleporting the player
             val nearbyMobs = if (entity is Player) {
                 level.getEntitiesOfClass(
@@ -127,6 +152,22 @@ open class LinkingBookItem(properties: Properties) : Item(properties) {
                 } else {
                     mob.changeDimension(mobTransition)
                 }
+            }
+
+            // Direct sound for the traveling player
+            if (entity is net.minecraft.server.level.ServerPlayer) {
+                entity.connection.send(
+                    net.minecraft.network.protocol.game.ClientboundSoundPacket(
+                        net.minecraft.core.Holder.direct(MystcraftSounds.LINK_TRAVEL.get()),
+                        net.minecraft.sounds.SoundSource.PLAYERS,
+                        entity.blockX.toDouble(),
+                        entity.blockY.toDouble(),
+                        entity.blockZ.toDouble(),
+                        1.0f,
+                        1.0f,
+                        entity.level().random.nextLong()
+                    )
+                )
             }
         }
     }

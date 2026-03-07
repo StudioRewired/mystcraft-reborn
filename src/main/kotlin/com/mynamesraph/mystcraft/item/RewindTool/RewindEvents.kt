@@ -13,10 +13,10 @@ object RewindEvents {
     fun saveRewindPosition(player: Player) {
         val safePos = findSafePosition(player)
         if (safePos == null) {
-            println("MFC DEBUG: No safe position found for ${player.name.string}")
+            println("MYSTCRAFT DEBUG: No safe position found for ${player.name.string}")
             return
         }
-        println("MFC DEBUG: Saving rewind position ${safePos.first}, ${safePos.second}, ${safePos.third} in ${player.level().dimension().location()}")
+        println("MYSTCRAFT DEBUG: Saving rewind position ${safePos.first}, ${safePos.second}, ${safePos.third} in ${player.level().dimension().location()}")
 
         player.setData(
             MystcraftAttachments.REWIND_POSITION.get(),

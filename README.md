@@ -1,4 +1,3 @@
-# Mystcraft: Ageless
-- Mystcraft: Ageless is an attempt at reviving the original Mystcraft Minecraft mod by XCompWiz
-as it was before it became tedious and over-powered (pre 1.4.7) while expanding it to be a fully polished mod.
-### Developed for ModFest 1.21.
+# Mystcraft: Reborn
+- Mystcraft Reborn is an overhaul of Mystcraft Ageless, designed to elevate the survival minecraft experience.
+- For downloads and more information, visit https://www.curseforge.com/minecraft/mc-mods/mystcraft-reborn

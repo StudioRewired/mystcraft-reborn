@@ -252,8 +252,8 @@ object CameraEvents {
 
         // Finished message
         if (finishedMessageTicks > 0) {
-            val msg = if (lastCaptureWasVideo) Component.literal("§aVideo captured!")
-            else Component.literal("§aPhoto captured!")
+            val msg = if (lastCaptureWasVideo) Component.literal("§aMedia captured!")
+            else Component.literal("§aMedia captured!")
             val textW = font.width(msg)
             graphics.drawString(font, msg, (screenW - textW) / 2, screenH / 2 - 20, 0xFFFFFF, true)
         }

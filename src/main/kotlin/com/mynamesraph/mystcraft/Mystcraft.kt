@@ -49,6 +49,7 @@ import com.mynamesraph.mystcraft.data.networking.packet.PictureBookPlayerUpdateP
 import com.mynamesraph.mystcraft.client.PictureBookPlayerRenderer
 import com.mynamesraph.mystcraft.commands.MystcraftCommands
 import com.mynamesraph.mystcraft.data.networking.packet.EditingTableConfirmPacket
+import com.mynamesraph.mystcraft.events.HeadlampEvents
 import com.mynamesraph.mystcraft.events.PictureBookPlayerEvents
 import com.mynamesraph.mystcraft.ui.screen.BookBagScreen
 import com.mynamesraph.mystcraft.ui.screen.EditingTableScreen
@@ -207,6 +208,8 @@ class Mystcraft(modEventBus: IEventBus, modContainer: ModContainer) {
         NeoForge.EVENT_BUS.register(this)
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC)
         MystcraftAttachments.REGISTRY.register(modEventBus)
+        NeoForge.EVENT_BUS.register(HeadlampEvents)
+        MystcraftSounds.register(modEventBus)
         if (FMLEnvironment.dist.isClient) {
             NeoForge.EVENT_BUS.register(LinkingBookCraftEvents)
         }

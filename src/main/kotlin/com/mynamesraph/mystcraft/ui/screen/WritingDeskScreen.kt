@@ -119,7 +119,7 @@ class WritingDeskScreen(
         BUTTONS_Y = NOTEBOOK_Y + 17
 
         // Descriptive-book grid starts at the same Y as the notebook grid
-        SYMBOLS_X = BOOK_NAME_X - 25
+        SYMBOLS_X = BOOK_NAME_X - 18
         SYMBOLS_Y = BUTTONS_Y + BUTTON_STEP * 1
 
         // ── Book name edit box ─────────────────────────────────────────────

@@ -24,6 +24,12 @@ import com.mynamesraph.mystcraft.item.CameraItem
 import com.mynamesraph.mystcraft.item.PictureBookItem
 import com.mynamesraph.mystcraft.item.BiomeEncyclopediaItem
 import com.mynamesraph.mystcraft.item.BookBagItem
+import com.mynamesraph.mystcraft.item.HeadlampItem
+import net.minecraft.core.Holder
+import net.minecraft.sounds.SoundEvents
+import net.minecraft.world.item.ArmorItem
+import net.minecraft.world.item.ArmorMaterial
+import net.minecraft.world.item.crafting.Ingredient
 
 object MystcraftItems {
     val ITEMS: DeferredRegister.Items = DeferredRegister.createItems(
@@ -181,5 +187,31 @@ object MystcraftItems {
     val BOOK_BAG: DeferredItem<Item> = ITEMS.register(
         "book_bag",
         Supplier { BookBagItem(Item.Properties().stacksTo(1)) }
+    )
+
+    val HEADLAMP: DeferredItem<Item> = ITEMS.register(
+        "headlamp",
+        Supplier {
+            HeadlampItem(
+                HEADLAMP_MATERIAL,
+                Item.Properties()
+                    .stacksTo(1)
+                    .rarity(Rarity.UNCOMMON)
+            )
+        }
+    )
+
+    val HEADLAMP_MATERIAL: Holder<ArmorMaterial> = Holder.direct(
+        ArmorMaterial(
+            mapOf(ArmorItem.Type.HELMET to 0),  // no armor points
+            0,                                   // enchantability
+            SoundEvents.ARMOR_EQUIP_CHAIN,
+            { Ingredient.EMPTY },               // no repair item
+            listOf(ArmorMaterial.Layer(
+                ResourceLocation.fromNamespaceAndPath(MOD_ID, "headlamp")
+            )),
+            0f,  // toughness
+            0f   // knockback resistance
+        )
     )
 }
