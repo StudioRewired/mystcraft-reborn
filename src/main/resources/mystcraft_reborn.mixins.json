@@ -8,7 +8,8 @@
     "LecternBlockMixin",
     "NoiseRouterDataMixin",
     "OreVeinifierMixin",
-    "ResultSlotMixin"
+    "ResultSlotMixin",
+    "FlowingFluidMixin"
   ],
   "server": [],
   "client": [],

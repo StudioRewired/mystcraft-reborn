@@ -1,0 +1,13 @@
+{
+  "type": "mystcraft_reborn:locational_shapeless_crafting",
+  "ingredients": [
+    {
+      "item": "minecraft:sponge"
+    }
+  ],
+  "result": {
+    "id": "mystcraft_reborn:classic_sponge",
+    "count": 1
+  },
+  "group": "sponges"
+}

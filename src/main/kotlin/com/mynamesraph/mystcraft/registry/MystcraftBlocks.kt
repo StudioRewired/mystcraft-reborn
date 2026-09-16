@@ -26,6 +26,8 @@ import com.mynamesraph.mystcraft.block.receptacle.MediaExportReceptacleBlock
 import net.minecraft.world.level.block.SoundType
 import net.minecraft.world.level.material.MapColor
 import net.minecraft.world.item.Item
+import com.mynamesraph.mystcraft.block.sponge.ClassicSpongeBlock
+
 
 object MystcraftBlocks {
     val BLOCKS: DeferredRegister.Blocks = DeferredRegister.createBlocks(
@@ -664,6 +666,20 @@ object MystcraftBlocks {
     val EDITING_TABLE_ITEM: DeferredItem<BlockItem> = MystcraftItems.ITEMS.registerSimpleBlockItem(
         "editing_table",
         EDITING_TABLE
+    )
+
+    val CLASSIC_SPONGE: DeferredBlock<Block> = BLOCKS.register(
+        "classic_sponge",
+        Supplier {
+            ClassicSpongeBlock(
+                BlockBehaviour.Properties.ofFullCopy(Blocks.SPONGE)
+            )
+        }
+    )
+
+    val CLASSIC_SPONGE_ITEM: DeferredItem<BlockItem> = MystcraftItems.ITEMS.registerSimpleBlockItem(
+        "classic_sponge",
+        CLASSIC_SPONGE
     )
 
     //////////////////////////////////////////////////////////////

@@ -13,6 +13,7 @@ import net.minecraft.resources.ResourceKey
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.core.registries.Registries
 import net.commoble.infiniverse.api.InfiniverseAPI
+import com.mynamesraph.mystcraft.data.saved.SpongeRadiusData
 
 object MystcraftCommands {
 
@@ -114,6 +115,39 @@ object MystcraftCommands {
                             1
                         }
                 )
+                .then(
+                    Commands.literal("spongeRadius")
+                        .then(
+                            Commands.argument(
+                                "radius",
+                                IntegerArgumentType.integer(
+                                    SpongeRadiusData.MIN_RADIUS,
+                                    SpongeRadiusData.MAX_RADIUS
+                                )
+                            )
+                                .executes { ctx ->
+                                    val radius = IntegerArgumentType.getInteger(ctx, "radius")
+                                    val server = ctx.source.server
+                                    val data = server.overworld().dataStorage
+                                        .computeIfAbsent(SpongeRadiusData.FACTORY, SpongeRadiusData.FILE_NAME)
+                                    data.radius = radius
+                                    ctx.source.sendSystemMessage(
+                                        Component.literal("Classic sponge drain radius set to: $radius")
+                                    )
+                                    1
+                                }
+                        )
+                        .executes { ctx ->
+                            val server = ctx.source.server
+                            val data = server.overworld().dataStorage
+                                .computeIfAbsent(SpongeRadiusData.FACTORY, SpongeRadiusData.FILE_NAME)
+                            ctx.source.sendSystemMessage(
+                                Component.literal("Classic sponge drain radius is currently: ${data.radius}")
+                            )
+                            1
+                        }
+                )
+
         )
     }
 }
