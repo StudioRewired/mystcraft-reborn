@@ -1,0 +1,9 @@
+{
+  "asset_name": "pink_crystal",
+  "description": {
+    "color": "#E3B7E8",
+    "translate": "trim_material.mystcraft_reborn.pink_crystal"
+  },
+  "ingredient": "mystcraft_reborn:pink_crystal",
+  "item_model_index": 1.0
+}

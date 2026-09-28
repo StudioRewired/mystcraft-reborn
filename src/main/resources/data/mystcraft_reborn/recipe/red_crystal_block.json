@@ -1,0 +1,17 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "##",
+        "##"
+    ],
+    "key": {
+        "#": {
+            "item": "mystcraft_reborn:red_crystal"
+        }
+    },
+    "result": {
+        "id": "mystcraft_reborn:red_crystal_block",
+        "count": 1
+    },
+    "group": "mystcraft_crystal_blocks"
+}

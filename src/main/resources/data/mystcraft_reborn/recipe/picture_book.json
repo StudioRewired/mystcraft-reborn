@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "F",
+    "O",
+    "P"
+  ],
+  "key": {
+    "F": { "item": "minecraft:feather" },
+    "O": { "item": "minecraft:red_tulip" },
+    "P": { "item": "minecraft:paper" }
+  },
+  "result": {
+    "id": "mystcraft_reborn:picture_book",
+    "count": 1
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "mystcraft_reborn:notebook" },
+    { "item": "minecraft:book" }
+  ],
+  "result": {
+    "id": "mystcraft_reborn:biome_encyclopedia",
+    "count": 1
+  }
+}

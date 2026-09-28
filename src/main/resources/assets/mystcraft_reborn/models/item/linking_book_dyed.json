@@ -1,0 +1,6 @@
+{
+  "parent": "mystcraft_reborn:item/linking_book",
+  "textures": {
+    "layer1": "mystcraft_reborn:item/linking_book_tint"
+  }
+}

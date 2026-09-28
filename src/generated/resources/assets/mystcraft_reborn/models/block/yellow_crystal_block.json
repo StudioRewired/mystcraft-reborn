@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "mystcraft_reborn:block/yellow_crystal_block"
+  }
+}

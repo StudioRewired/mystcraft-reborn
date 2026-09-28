@@ -1,0 +1,13 @@
+{
+    "type": "mystcraft_reborn:locational_shapeless_crafting",
+    "ingredients": [
+        {
+            "item": "minecraft:book"
+        }
+    ],
+    "result": {
+        "id": "mystcraft_reborn:linking_book",
+        "count": 1
+    },
+    "group": "mystcraft_books"
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "mystcraft_reborn:block/budding_red_crystal"
+  }
+}

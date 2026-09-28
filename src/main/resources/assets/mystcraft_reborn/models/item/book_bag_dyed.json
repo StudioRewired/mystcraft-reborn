@@ -1,0 +1,6 @@
+{
+  "parent": "mystcraft_reborn:item/book_bag",
+  "textures": {
+    "layer1": "mystcraft_reborn:item/book_bag_tint"
+  }
+}

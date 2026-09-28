@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:block",
+  "pools": [{
+    "rolls": 1,
+    "entries": [{
+      "type": "minecraft:item",
+      "name": "minecraft:spawner"
+    }],
+    "conditions": [{
+      "condition": "minecraft:match_tool",
+      "predicate": {
+        "items": "minecraft:pickaxe",
+        "enchantments": [{
+          "enchantment": "minecraft:silk_touch",
+          "levels": { "min": 1 }
+        }]
+      }
+    }]
+  }]
+}

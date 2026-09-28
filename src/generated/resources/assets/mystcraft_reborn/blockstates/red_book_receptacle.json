@@ -1,0 +1,56 @@
+{
+  "variants": {
+    "facing=down,locked=false": {
+      "model": "mystcraft_reborn:block/red_book_receptacle",
+      "x": 180
+    },
+    "facing=down,locked=true": {
+      "model": "mystcraft_reborn:block/red_book_receptacle",
+      "x": 180
+    },
+    "facing=east,locked=false": {
+      "model": "mystcraft_reborn:block/red_book_receptacle",
+      "x": 90,
+      "y": 90
+    },
+    "facing=east,locked=true": {
+      "model": "mystcraft_reborn:block/red_book_receptacle",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north,locked=false": {
+      "model": "mystcraft_reborn:block/red_book_receptacle",
+      "x": 90
+    },
+    "facing=north,locked=true": {
+      "model": "mystcraft_reborn:block/red_book_receptacle",
+      "x": 90
+    },
+    "facing=south,locked=false": {
+      "model": "mystcraft_reborn:block/red_book_receptacle",
+      "x": 90,
+      "y": 180
+    },
+    "facing=south,locked=true": {
+      "model": "mystcraft_reborn:block/red_book_receptacle",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up,locked=false": {
+      "model": "mystcraft_reborn:block/red_book_receptacle"
+    },
+    "facing=up,locked=true": {
+      "model": "mystcraft_reborn:block/red_book_receptacle"
+    },
+    "facing=west,locked=false": {
+      "model": "mystcraft_reborn:block/red_book_receptacle",
+      "x": 90,
+      "y": 270
+    },
+    "facing=west,locked=true": {
+      "model": "mystcraft_reborn:block/red_book_receptacle",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

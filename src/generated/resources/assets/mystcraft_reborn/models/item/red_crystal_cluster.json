@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "mystcraft_reborn:block/crystal_cluster/red/red_crystal_cluster"
+  }
+}

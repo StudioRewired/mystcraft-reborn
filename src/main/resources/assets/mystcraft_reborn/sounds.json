@@ -1,0 +1,10 @@
+{
+  "link_travel": {
+    "sounds": [
+      {
+        "name": "mystcraft_reborn:link_travel",
+        "stream": false
+      }
+    ]
+  }
+}
